@@ -16,6 +16,7 @@ from setuptools import setup
 
 setup(
     name='scrum',
+    description="A scrum CLI tool & Python wrapper to manage Issues, Labels & Milestones in multiple repositories on GitHub",  # NOQA
     url='https://github.com/dhilipsiva/scrum',
     version='0.0.1',
     py_modules=['scrum'],
@@ -28,5 +29,6 @@ setup(
     entry_points='''
         [console_scripts]
         scrum=scrum:scrum
+        scrum-util=scrum:scrum_util
     ''',
 )
