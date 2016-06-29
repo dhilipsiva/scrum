@@ -29,6 +29,5 @@ setup(
     entry_points='''
         [console_scripts]
         scrum=scrum:scrum
-        scrum-util=scrum:scrum_util
     ''',
 )
