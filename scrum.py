@@ -22,22 +22,34 @@ from github.GithubException import GithubException
 FORMAT_VERSION = 1
 SCRUM_PATH = join(expanduser("~"), ".scrum")
 TYPES = [
-    ("bug", "e74c3c"),  # Bug
-    ("docs", "1abc9c"),  # Docs
-    ("test", "2ecc71"),  # Test related
-    ("chore", "3498db"),  # Chore, Maintenance work
-    ("feature", "9b59b6"),  # New feature
-    ("refactor", "34495e"),  # Refactor
-    ("performance", "f1c40f"),  # Performance related
-    ("infrastructure", "95a5a6"),  # Infrastructure related
+    ("bug", "E3000E"),
+    ("docs", "7BB0A6"),
+    ("test", "92F22A"),
+    ("chore", "8F6F40"),
+    ("feature", "FD5B03"),
+    ("invalid", "63393E"),
+    ("wontfix", "F29B34"),
+    ("question", "8870FF"),
+    ("refactor", "FEC606"),
+    ("duplicate", "3D8EB9"),
+    ("enhancement", "FF6766"),
+    ("help-wanted", "EEFF6B"),
+    ("performance", "2FE2D9"),
+    ("infrastructure", "B3BB19"),
 ]
 POINTS = [1, 2, 3, 5, 8, 13, 21, ]  # Black #000000
 PRIORTIES = [
-    ("lowest", "ecf0f1"),
-    ("low", "95a5a6"),
-    ("medium", "f1c40f"),
-    ("high", "e67e22"),
-    ("highest", "e74c3c"),
+    ("lowest", "FFFFF7"),
+    ("low", "D2D7D3"),
+    ("medium", "FEC606"),
+    ("high", "FF7416"),
+    ("highest", "E3000E"),
+]
+
+# FIXME: This is an UGLY, UGGGGLLLYY hack scratch my own itch
+REPOS = [
+    "sherlock", "irene", "androguard", "mycroft", "moriarty", "anthea",
+    "appknox.github.io", "molly"
 ]
 
 
@@ -77,11 +89,10 @@ def _apply_label(repo, name, color):
 
 
 @scrum.command()
-def create_lables():
-    # FIXME: This is an UGLY, UGGGGLLLYY hack scratch my own itch
-    REPOS = [
-        "sherlock", "irene", "androguard", "mycroft", "moriarty", "anthea",
-        "appknox.github.io", "molly"]
+def delete_all_labels():
+    """
+    Delete all the labels
+    """
     with open(SCRUM_PATH, "r") as dot_scrum_file:
         dot_scrum = dot_scrum_file.read()
     dot_scrum = loads(dot_scrum)
@@ -89,12 +100,20 @@ def create_lables():
     for repo in g.get_user().get_repos():
         if repo.name not in REPOS:
             continue
-        try:
-            print("Delete default bug label")
-            bug_label = repo.get_label('bug')
-            bug_label.delete()
-        except GithubException:
-            print("Bug does not exist")
+        for label in repo.get_labels():
+            print("deleting %s on %s" % (label.name, repo.name))
+            label.delete()
+
+
+@scrum.command()
+def create_lables():
+    with open(SCRUM_PATH, "r") as dot_scrum_file:
+        dot_scrum = dot_scrum_file.read()
+    dot_scrum = loads(dot_scrum)
+    g = Github(dot_scrum["api_key"])
+    for repo in g.get_user().get_repos():
+        if repo.name not in REPOS:
+            continue
         for label in TYPES:
             name, color = label
             _apply_label(repo, "type:%s" % name, color)
