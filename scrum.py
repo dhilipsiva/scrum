@@ -24,9 +24,9 @@ SCRUM_PATH = join(expanduser("~"), ".scrum")
 TYPES = [
     ("bug", "E3000E"),
     ("docs", "7BB0A6"),
-    ("test", "92F22A"),
+    ("test", "FD5B03"),
     ("chore", "8F6F40"),
-    ("feature", "FD5B03"),
+    ("feature", "92F22A"),
     ("invalid", "63393E"),
     ("wontfix", "F29B34"),
     ("question", "8870FF"),
