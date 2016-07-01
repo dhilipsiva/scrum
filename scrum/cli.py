@@ -82,8 +82,10 @@ def _apply_label(repo, name, color):
         repo.create_label(name, color)
         print("Created\n")
     except GithubException:
-        print("Label already exist, editing it")
+        print("Label already exist, Attemting to edit it")
         label = repo.get_label(name)
+        if label.color == color:
+            return
         label.edit(name, color)
         print("Edited!\n")
 
@@ -122,3 +124,21 @@ def create_lables():
             _apply_label(repo, "priority:%s" % name, color)
         for point in POINTS:
             _apply_label(repo, "point:%d" % point, "000000")
+
+
+@scrum.command()
+def ping():
+    """
+    docstring for ping
+    """
+    print("ping")
+    with open(SCRUM_PATH, "r") as dot_scrum_file:
+        dot_scrum = dot_scrum_file.read()
+    dot_scrum = loads(dot_scrum)
+    g = Github(dot_scrum["api_key"])
+    repos = g.get_user().get_repos()
+    repo_list = []
+    for repo in repos:
+        repo_list.append(repo)
+    print(repo_list)
+    print(len(repo_list))
