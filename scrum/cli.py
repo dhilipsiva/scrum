@@ -14,6 +14,7 @@ Date created: 2016-06-29
 
 from json import dumps, loads
 from os.path import expanduser, join
+from datetime import datetime
 
 import click
 from github import Github
@@ -90,16 +91,34 @@ def _apply_label(repo, name, color):
         print("Edited!\n")
 
 
+def get_g():
+    """
+    Get the Github Object
+    """
+    with open(SCRUM_PATH, "r") as dot_scrum_file:
+        dot_scrum = dot_scrum_file.read()
+    dot_scrum = loads(dot_scrum)
+    return Github(dot_scrum["api_key"], timeout=600000)
+
+
+def _get_repos():
+    """
+    Get the repos that we are interested in
+    """
+    g = get_g()
+    repos = []
+    for repo in g.get_user().get_repos():
+        if repo.name in REPOS:
+            repos.append(repo)
+    return repos
+
+
 @scrum.command()
 def delete_all_labels():
     """
     Delete all the labels
     """
-    with open(SCRUM_PATH, "r") as dot_scrum_file:
-        dot_scrum = dot_scrum_file.read()
-    dot_scrum = loads(dot_scrum)
-    g = Github(dot_scrum["api_key"])
-    for repo in g.get_user().get_repos():
+    for repo in _get_repos():
         if repo.name not in REPOS:
             continue
         for label in repo.get_labels():
@@ -109,11 +128,7 @@ def delete_all_labels():
 
 @scrum.command()
 def create_lables():
-    with open(SCRUM_PATH, "r") as dot_scrum_file:
-        dot_scrum = dot_scrum_file.read()
-    dot_scrum = loads(dot_scrum)
-    g = Github(dot_scrum["api_key"])
-    for repo in g.get_user().get_repos():
+    for repo in _get_repos():
         if repo.name not in REPOS:
             continue
         for label in TYPES:
@@ -132,10 +147,7 @@ def ping():
     docstring for ping
     """
     print("ping")
-    with open(SCRUM_PATH, "r") as dot_scrum_file:
-        dot_scrum = dot_scrum_file.read()
-    dot_scrum = loads(dot_scrum)
-    g = Github(dot_scrum["api_key"])
+    g = get_g()
     repos = g.get_user().get_repos()
     repo_list = []
     for repo in repos:
