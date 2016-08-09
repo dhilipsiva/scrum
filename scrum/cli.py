@@ -154,3 +154,28 @@ def ping():
         repo_list.append(repo)
     print(repo_list)
     print(len(repo_list))
+
+
+@scrum.command()
+def list_milestones():
+    """
+    List the open milestones
+    """
+    repos = _get_repos()
+    for repo in repos:
+        print(repo.name, ": ")
+        for milestone in repo.get_milestones("open"):
+            print(milestone.title)
+        print("================")
+
+
+@scrum.command()
+@click.argument('date')
+def create_milestones(date):
+    """
+    docstring for create_milestones
+    """
+    date = "%sT59:59:10Z" % date
+    date_obj = datetime.strptime(date, "%Y-%m-%d")
+    for repo in _get_repos():
+        repo.create_milestone(date, due_on=date_obj)
